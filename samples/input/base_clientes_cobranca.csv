@@ -2,3 +2,4 @@ cliente_id,nome_cliente,dias_atraso,mensagem_enviada,entrega_confirmada,leitura_
 101,Carlos Mendes,45,true,true,true,false,false,false,false,false,3
 102,Mariana Souza,18,true,true,false,true,false,true,true,false,2
 103,Rafael Lima,62,true,false,false,false,false,false,false,true,5
+104,Felipe Inaico,12,true,true,false,false,false,false,true,false,1

@@ -7,6 +7,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<DecisaoResposta>();
 builder.Services.AddSingleton<DadosTeste>();
+builder.Services.AddSingleton<LeitorLegado>();
 
 var app = builder.Build();
 
