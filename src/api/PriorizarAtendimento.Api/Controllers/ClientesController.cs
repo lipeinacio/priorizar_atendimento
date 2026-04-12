@@ -8,14 +8,14 @@ namespace PriorizarAtendimento.Api.Controllers;
 [Route("api")]
 public class ClientesController : ControllerBase
 {
-    private readonly DecisaoResposta _decisionService;
+    private readonly RepositorioDecisao _decisaoRepository;
     private readonly DadosTeste _mockDataService;
 
     public ClientesController(
-        DecisaoResposta decisionService,
+        RepositorioDecisao decisaoRepository,
         DadosTeste mockDataService)
     {
-        _decisionService = decisionService;
+        _decisaoRepository = decisaoRepository;
         _mockDataService = mockDataService;
     }
 
@@ -25,18 +25,69 @@ public class ClientesController : ControllerBase
         var clientes = _mockDataService.ObterClientes()
             .Select(cliente =>
             {
-                var decisao = _decisionService.Avaliar(cliente);
+                var resultado = _decisaoRepository.Consultar(new ConsultaDecisao
+                {
+                    ClienteId = cliente.ClienteId,
+                    NomeCliente = cliente.NomeCliente,
+                    DiasAtraso = cliente.DiasAtraso,
+                    MensagemEnviada = cliente.MensagemEnviada,
+                    EntregaConfirmada = cliente.EntregaConfirmada,
+                    LeituraConfirmada = cliente.LeituraConfirmada,
+                    Interagiu = cliente.Interagiu,
+                    BoletoGerado = cliente.BoletoGerado,
+                    ContatoAtendido = cliente.ContatoAtendido,
+                    ClienteFidelizado = cliente.ClienteFidelizado,
+                    LinhaInstavel = cliente.LinhaInstavel
+                });
 
                 return new CleinteList
                 {
                     ClienteId = cliente.ClienteId,
                     NomeCliente = cliente.NomeCliente,
                     DiasAtraso = cliente.DiasAtraso,
-                    StatusAtual = decisao.AcaoRecomendada
+                    StatusAtual = resultado.AcaoRecomendada
                 };
             });
 
         return Ok(clientes);
+    }
+
+    [HttpGet("prioridade")]
+    public ActionResult<IEnumerable<PrioridadeAtendimento>> ObterPrioridade()
+    {
+        var prioridades = _mockDataService.ObterClientes()
+            .Select(cliente =>
+            {
+                var resultado = _decisaoRepository.Consultar(new ConsultaDecisao
+                {
+                    ClienteId = cliente.ClienteId,
+                    NomeCliente = cliente.NomeCliente,
+                    DiasAtraso = cliente.DiasAtraso,
+                    MensagemEnviada = cliente.MensagemEnviada,
+                    EntregaConfirmada = cliente.EntregaConfirmada,
+                    LeituraConfirmada = cliente.LeituraConfirmada,
+                    Interagiu = cliente.Interagiu,
+                    BoletoGerado = cliente.BoletoGerado,
+                    ContatoAtendido = cliente.ContatoAtendido,
+                    ClienteFidelizado = cliente.ClienteFidelizado,
+                    LinhaInstavel = cliente.LinhaInstavel
+                });
+
+                return new PrioridadeAtendimento
+                {
+                    ClienteId = cliente.ClienteId,
+                    NomeCliente = cliente.NomeCliente,
+                    Classificacao = resultado.Classificacao,
+                    Prioridade = resultado.Prioridade,
+                    AcaoRecomendada = resultado.AcaoRecomendada,
+                    Motivo = resultado.Motivo
+                };
+            })
+            .OrderByDescending(item => ObterPeso(item.Prioridade))
+            .ThenByDescending(item => item.ClienteId)
+            .ToList();
+
+        return Ok(prioridades);
     }
 
     [HttpGet("status/{clienteId:int}")]
@@ -48,44 +99,32 @@ public class ClientesController : ControllerBase
             return NotFound();
         }
 
-        var decisao = _decisionService.Avaliar(cliente);
+        var resultado = _decisaoRepository.Consultar(new ConsultaDecisao
+        {
+            ClienteId = cliente.ClienteId,
+            NomeCliente = cliente.NomeCliente,
+            DiasAtraso = cliente.DiasAtraso,
+            MensagemEnviada = cliente.MensagemEnviada,
+            EntregaConfirmada = cliente.EntregaConfirmada,
+            LeituraConfirmada = cliente.LeituraConfirmada,
+            Interagiu = cliente.Interagiu,
+            BoletoGerado = cliente.BoletoGerado,
+            ContatoAtendido = cliente.ContatoAtendido,
+            ClienteFidelizado = cliente.ClienteFidelizado,
+            LinhaInstavel = cliente.LinhaInstavel
+        });
 
         return Ok(new Status
         {
             ClienteId = cliente.ClienteId,
             NomeCliente = cliente.NomeCliente,
-            StatusAtual = _decisionService.ClassificarCliente(cliente),
-            AcaoRecomendada = decisao.AcaoRecomendada,
-            Motivo = decisao.Motivo
+            StatusAtual = resultado.Classificacao,
+            AcaoRecomendada = resultado.AcaoRecomendada,
+            Motivo = resultado.Motivo
         });
     }
 
-    [HttpGet("prioridade")]
-    public ActionResult<IEnumerable<PrioridadeAtendimento>> ObterPrioridade()
-    {
-        var prioridades = _mockDataService.ObterClientes()
-            .Select(cliente =>
-            {
-                var decisao = _decisionService.Avaliar(cliente);
-
-                return new PrioridadeAtendimento
-                {
-                    ClienteId = cliente.ClienteId,
-                    NomeCliente = cliente.NomeCliente,
-                    Classificacao = _decisionService.ClassificarCliente(cliente),
-                    Prioridade = decisao.Prioridade,
-                    AcaoRecomendada = decisao.AcaoRecomendada,
-                    Motivo = decisao.Motivo
-                };
-            })
-            .OrderByDescending(item => _decisionService.ObterPesoPrioridade(item.Prioridade))
-            .ThenByDescending(item => item.ClienteId)
-            .ToList();
-
-        return Ok(prioridades);
-    }
-
-        [HttpPost("interacoes")]
+    [HttpPost("interacoes")]
     public ActionResult<InteracaoRegistrada> RegistrarInteracao([FromBody] RegistrarInteracao request)
     {
         var resposta = new InteracaoRegistrada
@@ -100,8 +139,17 @@ public class ClientesController : ControllerBase
         return Ok(resposta);
     }
 
+    private static int ObterPeso(string prioridade)
+    {
+        return prioridade switch
+        {
+            "ALTA" => 3,
+            "MEDIA" => 2,
+            "BAIXA" => 1,
+            _ => 0
+        };
+    }
 }
-
 
 
 

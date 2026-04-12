@@ -8,6 +8,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<DecisaoResposta>();
 builder.Services.AddSingleton<DadosTeste>();
 builder.Services.AddSingleton<LeitorLegado>();
+builder.Services.AddSingleton<RepositorioDecisao>();
 
 var app = builder.Build();
 
