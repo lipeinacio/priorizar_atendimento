@@ -31,3 +31,5 @@ C:\Users\felip\Documents\C#\priorizar_atendimento\src\api\PriorizarAtendimento.A
 C:\Users\felip\Documents\C#\priorizar_atendimento\src\api\PriorizarAtendimento.Api\obj\Debug\net8.0\PriorizarAtendimento.Api.pdb
 C:\Users\felip\Documents\C#\priorizar_atendimento\src\api\PriorizarAtendimento.Api\obj\Debug\net8.0\PriorizarAtendimento.Api.genruntimeconfig.cache
 C:\Users\felip\Documents\C#\priorizar_atendimento\src\api\PriorizarAtendimento.Api\obj\Debug\net8.0\ref\PriorizarAtendimento.Api.dll
+C:\Users\felip\Documents\C#\priorizar_atendimento\src\api\PriorizarAtendimento.Api\bin\Debug\net8.0\Npgsql.dll
+C:\Users\felip\Documents\C#\priorizar_atendimento\src\api\PriorizarAtendimento.Api\bin\Debug\net8.0\System.Diagnostics.DiagnosticSource.dll
