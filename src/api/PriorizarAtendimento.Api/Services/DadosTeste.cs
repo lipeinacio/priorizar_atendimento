@@ -4,52 +4,48 @@ namespace PriorizarAtendimento.Api.Services;
 
 public class DadosTeste
 {
+    private readonly string _arquivoBaseClientes;
+
+    public DadosTeste(IWebHostEnvironment environment)
+    {
+        _arquivoBaseClientes = Path.GetFullPath(
+            Path.Combine(environment.ContentRootPath, "..", "..", "..", "samples", "input", "base_clientes_cobranca.csv"));
+    }
+
     public List<ClienteSituacaoTeste> ObterClientes()
     {
-        return new List<ClienteSituacaoTeste>
+        if (!File.Exists(_arquivoBaseClientes))
         {
-            new()
-            {
-                ClienteId = 1001,
-                NomeCliente = "Carlos Doidao",
-                DiasAtraso = 45,
-                MensagemEnviada = true,
-                EntregaConfirmada = true,
-                LeituraConfirmada = true,
-                Interagiu = false,
-                BoletoGerado = false,
-                ContatoAtendido = false,
-                ClienteFidelizado = false,
-                LinhaInstavel = false
-            },
-            new()
-            {
-                ClienteId = 102,
-                NomeCliente = "Mariana Maluca",
-                DiasAtraso = 18,
-                MensagemEnviada = true,
-                EntregaConfirmada = true,
-                LeituraConfirmada = false,
-                Interagiu = true,
-                BoletoGerado = false,
-                ContatoAtendido = true,
-                ClienteFidelizado = true,
-                LinhaInstavel = false
-            },
-            new()
-            {
-                ClienteId = 1003,
-                NomeCliente = "Rafael Zoeiro",
-                DiasAtraso = 62,
-                MensagemEnviada = true,
-                EntregaConfirmada = false,
-                LeituraConfirmada = false,
-                Interagiu = false,
-                BoletoGerado = false,
-                ContatoAtendido = false,
-                ClienteFidelizado = false,
-                LinhaInstavel = true
-            }
+            throw new FileNotFoundException("Arquivo base de clientes nao encontrado.", _arquivoBaseClientes);
+        }
+
+        var linhas = File.ReadAllLines(_arquivoBaseClientes)
+            .Skip(1)
+            .Where(linha => !string.IsNullOrWhiteSpace(linha));
+
+        return linhas.Select(MapearLinha).ToList();
+    }
+
+    private static ClienteSituacaoTeste MapearLinha(string linha)
+    {
+        var colunas = linha.Split(',');
+
+        return new ClienteSituacaoTeste
+        {
+            ClienteId = int.Parse(colunas[0]),
+            NomeCliente = colunas[1],
+            DiasAtraso = int.Parse(colunas[2]),
+            MensagemEnviada = bool.Parse(colunas[3]),
+            EntregaConfirmada = bool.Parse(colunas[4]),
+            LeituraConfirmada = bool.Parse(colunas[5]),
+            Interagiu = bool.Parse(colunas[6]),
+            BoletoGerado = bool.Parse(colunas[7]),
+            ContatoAtendido = bool.Parse(colunas[8]),
+            ClienteFidelizado = bool.Parse(colunas[9]),
+            LinhaInstavel = bool.Parse(colunas[10])
         };
     }
 }
+
+
+
