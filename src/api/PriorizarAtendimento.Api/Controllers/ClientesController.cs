@@ -23,78 +23,82 @@ public class ClientesController : ControllerBase
     }
 
     [HttpGet("clientes")]
-    public ActionResult<IEnumerable<CleinteList>> ListarClientes()
+    public async Task<ActionResult<IEnumerable<CleinteList>>> ListarClientes()
     {
-        var clientes = _mockDataService.ObterClientes()
-            .Select(cliente =>
-            {
-                var resultado = _decisaoRepository.Consultar(new ConsultaDecisao
-                {
-                    ClienteId = cliente.ClienteId,
-                    NomeCliente = cliente.NomeCliente,
-                    DiasAtraso = cliente.DiasAtraso,
-                    MensagemEnviada = cliente.MensagemEnviada,
-                    EntregaConfirmada = cliente.EntregaConfirmada,
-                    LeituraConfirmada = cliente.LeituraConfirmada,
-                    Interagiu = cliente.Interagiu,
-                    BoletoGerado = cliente.BoletoGerado,
-                    ContatoAtendido = cliente.ContatoAtendido,
-                    ClienteFidelizado = cliente.ClienteFidelizado,
-                    LinhaInstavel = cliente.LinhaInstavel
-                });
+        var clientes = new List<CleinteList>();
 
-                return new CleinteList
-                {
-                    ClienteId = cliente.ClienteId,
-                    NomeCliente = cliente.NomeCliente,
-                    DiasAtraso = cliente.DiasAtraso,
-                    StatusAtual = resultado.AcaoRecomendada
-                };
+        foreach (var cliente in _mockDataService.ObterClientes())
+        {
+            var resultado = await _decisaoRepository.ConsultarAsync(new ConsultaDecisao
+            {
+                ClienteId = cliente.ClienteId,
+                NomeCliente = cliente.NomeCliente,
+                DiasAtraso = cliente.DiasAtraso,
+                MensagemEnviada = cliente.MensagemEnviada,
+                EntregaConfirmada = cliente.EntregaConfirmada,
+                LeituraConfirmada = cliente.LeituraConfirmada,
+                Interagiu = cliente.Interagiu,
+                BoletoGerado = cliente.BoletoGerado,
+                ContatoAtendido = cliente.ContatoAtendido,
+                ClienteFidelizado = cliente.ClienteFidelizado,
+                LinhaInstavel = cliente.LinhaInstavel
             });
+
+            clientes.Add(new CleinteList
+            {
+                ClienteId = cliente.ClienteId,
+                NomeCliente = cliente.NomeCliente,
+                DiasAtraso = cliente.DiasAtraso,
+                StatusAtual = resultado.AcaoRecomendada
+            });
+        }
 
         return Ok(clientes);
     }
 
     [HttpGet("prioridade")]
-    public ActionResult<IEnumerable<PrioridadeAtendimento>> ObterPrioridade()
+    public async Task<ActionResult<IEnumerable<PrioridadeAtendimento>>> ObterPrioridade()
     {
-        var prioridades = _mockDataService.ObterClientes()
-            .Select(cliente =>
-            {
-                var resultado = _decisaoRepository.Consultar(new ConsultaDecisao
-                {
-                    ClienteId = cliente.ClienteId,
-                    NomeCliente = cliente.NomeCliente,
-                    DiasAtraso = cliente.DiasAtraso,
-                    MensagemEnviada = cliente.MensagemEnviada,
-                    EntregaConfirmada = cliente.EntregaConfirmada,
-                    LeituraConfirmada = cliente.LeituraConfirmada,
-                    Interagiu = cliente.Interagiu,
-                    BoletoGerado = cliente.BoletoGerado,
-                    ContatoAtendido = cliente.ContatoAtendido,
-                    ClienteFidelizado = cliente.ClienteFidelizado,
-                    LinhaInstavel = cliente.LinhaInstavel
-                });
+        var prioridades = new List<PrioridadeAtendimento>();
 
-                return new PrioridadeAtendimento
-                {
-                    ClienteId = cliente.ClienteId,
-                    NomeCliente = cliente.NomeCliente,
-                    Classificacao = resultado.Classificacao,
-                    Prioridade = resultado.Prioridade,
-                    AcaoRecomendada = resultado.AcaoRecomendada,
-                    Motivo = resultado.Motivo
-                };
-            })
+        foreach (var cliente in _mockDataService.ObterClientes())
+        {
+            var resultado = await _decisaoRepository.ConsultarAsync(new ConsultaDecisao
+            {
+                ClienteId = cliente.ClienteId,
+                NomeCliente = cliente.NomeCliente,
+                DiasAtraso = cliente.DiasAtraso,
+                MensagemEnviada = cliente.MensagemEnviada,
+                EntregaConfirmada = cliente.EntregaConfirmada,
+                LeituraConfirmada = cliente.LeituraConfirmada,
+                Interagiu = cliente.Interagiu,
+                BoletoGerado = cliente.BoletoGerado,
+                ContatoAtendido = cliente.ContatoAtendido,
+                ClienteFidelizado = cliente.ClienteFidelizado,
+                LinhaInstavel = cliente.LinhaInstavel
+            });
+
+            prioridades.Add(new PrioridadeAtendimento
+            {
+                ClienteId = cliente.ClienteId,
+                NomeCliente = cliente.NomeCliente,
+                Classificacao = resultado.Classificacao,
+                Prioridade = resultado.Prioridade,
+                AcaoRecomendada = resultado.AcaoRecomendada,
+                Motivo = resultado.Motivo
+            });
+        }
+
+        var prioridadesOrdenadas = prioridades
             .OrderByDescending(item => ObterPeso(item.Prioridade))
             .ThenByDescending(item => item.ClienteId)
             .ToList();
 
-        return Ok(prioridades);
+        return Ok(prioridadesOrdenadas);
     }
 
     [HttpGet("status/{clienteId:int}")]
-    public ActionResult<Status> ObterStatus(int clienteId)
+    public async Task<ActionResult<Status>> ObterStatus(int clienteId)
     {
         var cliente = _mockDataService.ObterClientes().FirstOrDefault(item => item.ClienteId == clienteId);
         if (cliente is null)
@@ -102,7 +106,7 @@ public class ClientesController : ControllerBase
             return NotFound();
         }
 
-        var resultado = _decisaoRepository.Consultar(new ConsultaDecisao
+        var resultado = await _decisaoRepository.ConsultarAsync(new ConsultaDecisao
         {
             ClienteId = cliente.ClienteId,
             NomeCliente = cliente.NomeCliente,
