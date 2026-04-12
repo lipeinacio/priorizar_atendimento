@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PriorizarAtendimento.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+12467323dac0a6300a274fd65a7ff11b8ef0ac50")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e2be1a780e2a2998ea3aaacfd84854770a2a90f8")]
 [assembly: System.Reflection.AssemblyProductAttribute("PriorizarAtendimento.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PriorizarAtendimento.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

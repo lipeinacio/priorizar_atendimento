@@ -10,13 +10,16 @@ public class ClientesController : ControllerBase
 {
     private readonly RepositorioDecisao _decisaoRepository;
     private readonly DadosTeste _mockDataService;
+    private readonly DatabaseConnection _databaseConnection;
 
     public ClientesController(
         RepositorioDecisao decisaoRepository,
-        DadosTeste mockDataService)
+        DadosTeste mockDataService,
+        DatabaseConnection databaseConnection)
     {
         _decisaoRepository = decisaoRepository;
         _mockDataService = mockDataService;
+        _databaseConnection = databaseConnection;
     }
 
     [HttpGet("clientes")]
@@ -149,6 +152,34 @@ public class ClientesController : ControllerBase
             _ => 0
         };
     }
+
+
+        [HttpGet("banco/teste")]
+    public async Task<ActionResult<TesteConexaoBanco>> TestarBanco()
+    {
+        try
+        {
+            var resultado = await _databaseConnection.TestarConexaoAsync();
+
+            return Ok(new TesteConexaoBanco
+            {
+                Sucesso = true,
+                Mensagem = "Conexao com PostgreSQL realizada com sucesso.",
+                Resultado = resultado
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new TesteConexaoBanco
+            {
+                Sucesso = false,
+                Mensagem = $"Falha ao conectar no PostgreSQL: {ex.Message}",
+                Resultado = 0
+            });
+        }
+    }
+
+
 }
 
 

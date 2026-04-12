@@ -6,16 +6,16 @@ public class RepositorioDecisao
 {
     private readonly DecisaoResposta _decisaoResposta;
     private readonly LeitorLegado _leitorLegado;
-    private readonly DatabaseConnectionFactory _databaseConnectionFactory;
+    private readonly DatabaseConnection _databaseConnection;
 
     public RepositorioDecisao(
         DecisaoResposta decisaoResposta,
         LeitorLegado leitorLegado,
-        DatabaseConnectionFactory databaseConnectionFactory)
+        DatabaseConnection databaseConnection)
     {
         _decisaoResposta = decisaoResposta;
         _leitorLegado = leitorLegado;
-        _databaseConnectionFactory = databaseConnectionFactory;
+        _databaseConnection = databaseConnection;
     }
 
     public ResultadoConsultaDecisao Consultar(ConsultaDecisao request)

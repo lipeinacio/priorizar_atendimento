@@ -11,6 +11,9 @@ obj/
 .vs/
 .vscode/
 
+# Local app settings
+src/api/PriorizarAtendimento.Api/appsettings.Local.json
+
 # Logs and temporary files
 *.log
 *.tmp
