@@ -29,6 +29,17 @@ public class DecisaoResposta
         return "MONITORAMENTO";
     }
 
+    public int ObterPesoPrioridade(string prioridade)
+    {
+        return prioridade switch
+        {
+            "ALTA" => 3,
+            "MEDIA" => 2,
+            "BAIXA" => 1,
+            _ => 0
+        };
+    }
+    
     public Decisao Avaliar(ClienteSituacaoTeste snapshot)
     {
         if (snapshot.LinhaInstavel || !snapshot.EntregaConfirmada)

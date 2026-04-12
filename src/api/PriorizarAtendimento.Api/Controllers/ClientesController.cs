@@ -59,6 +59,31 @@ public class ClientesController : ControllerBase
             Motivo = decisao.Motivo
         });
     }
+    
+    [HttpGet("prioridade")]
+    public ActionResult<IEnumerable<PrioridadeAtendimento>> ObterPrioridade()
+    {
+        var prioridades = _mockDataService.ObterClientes()
+            .Select(cliente =>
+            {
+                var decisao = _decisionService.Avaliar(cliente);
+
+                return new PrioridadeAtendimento
+                {
+                    ClienteId = cliente.ClienteId,
+                    NomeCliente = cliente.NomeCliente,
+                    Classificacao = _decisionService.ClassificarCliente(cliente),
+                    Prioridade = decisao.Prioridade,
+                    AcaoRecomendada = decisao.AcaoRecomendada,
+                    Motivo = decisao.Motivo
+                };
+            })
+            .OrderByDescending(item => _decisionService.ObterPesoPrioridade(item.Prioridade))
+            .ThenByDescending(item => item.ClienteId)
+            .ToList();
+
+        return Ok(prioridades);
+    }
 }
 
 
