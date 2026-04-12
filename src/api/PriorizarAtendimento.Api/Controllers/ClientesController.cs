@@ -59,7 +59,7 @@ public class ClientesController : ControllerBase
             Motivo = decisao.Motivo
         });
     }
-    
+
     [HttpGet("prioridade")]
     public ActionResult<IEnumerable<PrioridadeAtendimento>> ObterPrioridade()
     {
@@ -84,6 +84,22 @@ public class ClientesController : ControllerBase
 
         return Ok(prioridades);
     }
+
+        [HttpPost("interacoes")]
+    public ActionResult<InteracaoRegistrada> RegistrarInteracao([FromBody] RegistrarInteracao request)
+    {
+        var resposta = new InteracaoRegistrada
+        {
+            ClienteId = request.ClienteId,
+            Canal = request.Canal,
+            TipoInteracao = request.TipoInteracao,
+            DataHora = request.DataHora,
+            Mensagem = "Interacao registrada e pronta para reprocessamento."
+        };
+
+        return Ok(resposta);
+    }
+
 }
 
 
