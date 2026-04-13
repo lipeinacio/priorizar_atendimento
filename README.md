@@ -3,7 +3,7 @@
 # Priorizar Atendimento
 
 <p align="center">
-  Plataforma de priorização operacional com API em C#, regra legada em VB6 e centralização progressiva da inteligência no PostgreSQL.
+  Priorização operacional com API em C#, regra legada em VB6 e centralização progressiva da inteligência no PostgreSQL.
 </p>
 
 <div align="center">
